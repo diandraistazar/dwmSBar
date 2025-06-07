@@ -8,9 +8,9 @@ struct STATUS {
 	char *cpu;
 };
 
-void battery_md(struct STATUS *status, char *format);
+void battery_md(struct STATUS *status, char *format, char *path);
 void volume_md(struct STATUS *status, char *format);
-void bright_md(struct STATUS *status, char *format);
+void bright_md(struct STATUS *status, char *format, char *path);
 void date_md(struct STATUS *status, char *format);
 void uptime_md(struct STATUS *status, char *format);
 void memory_md(struct STATUS *status, char *format);
