@@ -5,17 +5,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "main.h"
-
-static void removeNewLine(char *string) {
-	string[strlen(string)-1] = '\0';
-}
+#include "utils.h"
 
 void battery_md(struct STATUS *status, char *format, char *path) {
 	char buffer[5] = "";
 	FILE *pBattery = fopen(path, "r");
 	fread(buffer, 1, sizeof(buffer), pBattery);
 	removeNewLine(buffer);
-	status->battery = realloc(status->battery, strlen(buffer));
+	status->battery = realloc(status->battery, strlen(buffer)+strlen(format));
 	sprintf(status->battery, format, atoi(buffer));
 	fclose(pBattery);
 }

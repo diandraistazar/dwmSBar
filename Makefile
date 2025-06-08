@@ -1,6 +1,6 @@
 CC := gcc
 FLAGS := -Wall -lpthread -lX11
-SRC := main.c battery.c
+SRC := main.c battery.c brightness.c utils.c
 OUT := dwmSBar
 
 all:

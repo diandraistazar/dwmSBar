@@ -1,35 +1,37 @@
-/* A SIMPLE DWM STATUS BAR WRITTEN IN C */
+/* A simple DWM status bar written in C */
 
 /* TODO: */
-// Show Current Battery Capacity (DONE)
-// Show Current Volume
-// Show Current Brightness
-// Show Current Date
-// Show Current Uptime
-// Show Current Memory Usage
-// Show Current CPU usage
+// Show current battery Capacity (DONE)
+// Show current volume
+// Show current brightness
+// Show current date
+// Show current uptime
+// Show current memory Usage
+// Show current CPU usage
 
 // Configuration
 // Modules (1 for enable, 0 for disable)
-#define BATTERY_MD	1		// To show current battery capacity
-#define VOLUME_MD	1		// To show current volume
-#define BRIGHT_MD	1		// To show current brightness
-#define DATE_MD		1		// To show date today
-#define UPTIME_MD	1		// To show Uptime
-#define MEMORY_MD	1		// To show memory usage (in Persentage)
-#define CPU_MD		1		// To show memory usage (in Persentage)
+#define BATTERY_MD	1		// Show current battery capacity
+#define VOLUME_MD	1		// Show current volume
+#define BRIGHT_MD	1		// Show current brightness
+#define DATE_MD		1		// Show current date
+#define UPTIME_MD	1		// Show system uptime
+#define MEMORY_MD	1		// Show memory usage (in percentage)
+#define CPU_MD		1		// Show memory usage (in percentage)
 
 // Modules Format 
-#define BAT_FORMAT		"Battery: %d%%"		// Use %d for represent battery capacity in decimal value
-#define BRIGHT_FORMAT	"Volume: %d%%"		// Use %d for represent volume in decimal value
+#define BAT_FORMAT		"BAT: %d%%"		// Use %d to represent battery capacity as a decimal value
+#define BRIGHT_FORMAT	"BRIGHT: %d%%"		// Use %d to represent volume as a decimal value
 
 // General
-#define SEP1			"["
-#define SEP2			"]"
+#define SEP1			"[ "
+#define SEP2			" ]"
 #define PATH_BATT		"/sys/class/power_supply/BAT0/capacity"			// Battery path
 #define PATH_BRIGHT		"/sys/class/backlight/amdgpu_bl1/brightness"	// Battery path
-#define TIMEOUT			500		// How long program to wait before execute next (in milliseconds) 
-#define SILENT_MODE		1		// No output if the program running as background process in terminal
+#define TIMEOUT			400		// Delay between update status bar (in milliseconds)
+#define SILENT_MODE		0		// No output if the program is running as a background process
+
+#define START
 
 #include <stdio.h>
 #include <string.h>
@@ -38,19 +40,18 @@
 #include <X11/Xlib.h>
 #include "main.h"
 
-char *XSetRoot(struct STATUS *status, int total, char ***modules, char *XSetStatus);
-
 int main() {
-	
 	// Initialization
+	Display *display = XOpenDisplay(NULL);
 	struct STATUS *status;
 	status = (struct STATUS*)malloc(sizeof(struct STATUS));
+	Initialization(status);
 
-	// Layout StatusBar (change it as your preference)
+	// StatusBar Layout (modify as needed)
 	char **modules[] = {
 		&status->battery,
-		&status->volume,
 		&status->bright,
+		&status->volume,
 		&status->date,
 		&status->uptime,
 		&status->memory,
@@ -62,19 +63,19 @@ int main() {
 	while(1) {
 		total = 0;
 		
-		if(BATTERY_MD) {
+		if(BATTERY_MD) { // Battery Section
 			battery_md(status, BAT_FORMAT, PATH_BATT);
 			total = total + 1;
-			if(SILENT_MODE) printf("Battery Running...\n");
+			if(!SILENT_MODE) printf("Battery Running...\n");
 		}
 
-		//if(BRIGHT_MD) {
-			//bright_md(status, BRIGHT_FORMAT, PATH_BRIGHT);
-			//total = total + 1;
-			//if(SILENT_MODE) printf("Brightness Running...\n");
-		//}
+		if(BRIGHT_MD) { // Brightness Section
+			bright_md(status, BRIGHT_FORMAT, PATH_BRIGHT);
+			total = total + 1;
+			if(!SILENT_MODE) printf("Brightness Running...\n");
+		}
 
-		if((XSetStatus = XSetRoot(status, total, modules, XSetStatus)) == NULL) {
+		if((XSetStatus = XSetRoot(display, status, total, modules, XSetStatus)) == NULL) { // Update statusbar
 			perror("Gagal Terkoneksi dengan X server: ");
 			break;
 		}
@@ -89,24 +90,31 @@ int main() {
 	free(status->cpu);
 	free(XSetStatus);
 	free(status);
+	XCloseDisplay(display);
 	return 0;
 }
 
-char *XSetRoot(struct STATUS *status, int total, char ***modules, char *XSetStatus) {
-	XSetStatus = realloc(XSetStatus, 100);
+char *XSetRoot(Display *display, struct STATUS *status, int total, char ***modules, char *XSetStatus) {
+	XSetStatus = realloc(XSetStatus, (sizeof(char)*20)*total);
 	strcpy(XSetStatus, "");	
-
+	
 	for(int x = 0; x < total; x++) {
 		strcat(XSetStatus, SEP1);
 		strcat(XSetStatus, *modules[x]);
 		strcat(XSetStatus, SEP2);
 	}
-	Display *display;
-	if((display = XOpenDisplay(NULL)) == NULL) {
-		return NULL;
-	}
+	
 	XStoreName(display, DefaultRootWindow(display), XSetStatus);
 	XSync(display, 0);
-	XCloseDisplay(display);
 	return XSetStatus;
+}
+
+void Initialization(struct STATUS *status) {
+	status->battery = NULL;
+	status->volume = NULL;
+	status->bright = NULL;
+	status->date = NULL;
+	status->uptime = NULL;
+	status->memory = NULL;
+	status->cpu = NULL;
 }
