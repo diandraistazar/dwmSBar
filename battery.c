@@ -1,5 +1,5 @@
 /* BATTERY MODULE */
-// To show current battery capacity
+// Show current battery capacity
 
 #include <string.h>
 #include <stdlib.h>

@@ -1,5 +1,5 @@
 /* BRIGHTNESS MODULE */
-// To show current brightness
+// Show current brightness
 
 #include "main.h"
 #include "utils.h"

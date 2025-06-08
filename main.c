@@ -3,11 +3,11 @@
 /* TODO: */
 // Show current battery Capacity (DONE)
 // Show current volume
-// Show current brightness
+// Show current brightness (DONE)
 // Show current date
 // Show current uptime
-// Show current memory Usage
-// Show current CPU usage
+// Show current memory Usage (DONE)
+// Show current CPU usage (WORKING)
 
 // Configuration
 // Modules (1 for enable, 0 for disable)
@@ -20,19 +20,20 @@
 #define CPU_MD		1		// Show memory usage (in percentage)
 
 // Modules Format 
-#define BAT_FORMAT		"BAT: %d%%"		// Use %d to represent battery capacity as a decimal value
-#define BRIGHT_FORMAT	"BRIGHT: %d%%"		// Use %d to represent volume as a decimal value
+#define BAT_FORMAT		"󰂂 %d%%"		// Use %d to represent battery capacity as a decimal value
+#define BRIGHT_FORMAT	"󰌵 %d%%"		// Use %d to represent volume as a decimal value
+#define MEMORY_FORMAT	"  %d MiB"		// Use %d to represent memory as a decimal value
+#define CPU_FORMAT		" %d%%"		// Use %d to represent memory as a decimal value
 
 // General
-#define SEP1			"[ "
-#define SEP2			" ]"
+#define SEP1			" / "
+#define SEP2			""
 #define PATH_BATT		"/sys/class/power_supply/BAT0/capacity"			// Battery path
-#define PATH_BRIGHT		"/sys/class/backlight/amdgpu_bl1/brightness"	// Battery path
+#define PATH_BRIGHT		"/sys/class/backlight/amdgpu_bl1/brightness"	// Brightness path
 #define TIMEOUT			400		// Delay between update status bar (in milliseconds)
-#define SILENT_MODE		0		// No output if the program is running as a background process
+#define SILENT_MODE		1		// No output if the program is running as a background process
 
 #define START
-
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -49,12 +50,12 @@ int main() {
 
 	// StatusBar Layout (modify as needed)
 	char **modules[] = {
+		&status->memory,
 		&status->battery,
 		&status->bright,
 		&status->volume,
 		&status->date,
 		&status->uptime,
-		&status->memory,
 		&status->cpu,
 	};
 
@@ -73,6 +74,18 @@ int main() {
 			bright_md(status, BRIGHT_FORMAT, PATH_BRIGHT);
 			total = total + 1;
 			if(!SILENT_MODE) printf("Brightness Running...\n");
+		}
+		
+		if(MEMORY_MD) { // Memory Section
+			memory_md(status, MEMORY_FORMAT);
+			total = total + 1;
+			if(!SILENT_MODE) printf("Memory Running...\n");
+		}
+		
+		if(CPU_MD) { // Memory Section
+			cpu_md(status, CPU_FORMAT);
+			total = total + 1;
+			if(!SILENT_MODE) printf("CPU Running...\n");
 		}
 
 		if((XSetStatus = XSetRoot(display, status, total, modules, XSetStatus)) == NULL) { // Update statusbar
