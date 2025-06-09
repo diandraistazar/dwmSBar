@@ -2,11 +2,6 @@
 
 **dwmSBar** is a minimal and lightweight status bar for [dwm](https://dwm.suckless.org/), written in C. It includes several useful modules to display system information on your dwm status bar.  
 
-NOTE:
---
-**dwmSBar** is no longer under active maintenance. Some modules are not fully implemented, but feel free to fork this repository and continue improving or completing them.
-
-
 ## Installation
 Note: To build this program, you need dependencies like ```gcc``` and ```libX11``` installed on your system.
 1. Clone this repository to your local machine and navigate into the directory:
