@@ -20,20 +20,21 @@
 #define MEMORY_MD	1		// Show memory usage (in percentage)
 #define CPU_MD		1		// Show memory usage (in percentage)
 
-// Modules Format 
-#define BAT_FORMAT		"󰂂 %d%%"		// Use %d to represent battery capacity as a decimal value
-#define BRIGHT_FORMAT	"󰌵 %.lf%%"		// Use %lf to represent volume as a float value
-#define MEMORY_FORMAT	"  %d MiB"		// Use %d to represent memory as a decimal value
-#define CPU_FORMAT		" %d%%"		// Use %d to represent memory as a decimal value
-#define UPTIME_FORMAT	"󱎫 %d Sec, %d Mnt, %d Hr"		// Use %d to represent memory as a decimal value
+// Modules Format		Format(in string literal)
+#define BAT_FORMAT		"󰂂 %d%%"						// Use %d to represent battery capacity as a decimal value
+#define BRIGHT_FORMAT	"󰌵 %.lf%%"						// Use %lf to represent volume as a float value
+#define MEMORY_FORMAT	"  %d MiB"						// Use %d to represent memory as a decimal value
+#define CPU_FORMAT		" %d%%"						// Use %d to represent memory as a decimal value
+#define UPTIME_FORMAT	"󱎫 %d Sec, %d Mnt, %d Hr"		// Use %d to represent uptime as a decimal value
+#define DATE_FORMAT		"  %a, %d %b %Y - %H:%M:%S"		// Use strftime format, google it for more details
 
 // General
 #define SEP1			" / "
 #define SEP2			""
 #define PATH_BATT		"/sys/class/power_supply/BAT0/capacity"			// Battery path
 #define PATH_BRIGHT		"/sys/class/backlight/amdgpu_bl1/brightness"	// Brightness path
-#define TIMEOUT			500		// Delay between update status bar (in milliseconds)
-#define SILENT_MODE		1		// No output if the program is running as a background process
+#define TIMEOUT			500												// Delay between update status bar (in milliseconds)
+#define SILENT_MODE		1												// No output if the program is running as a background process
 
 #define START
 #include <stdio.h>
@@ -61,7 +62,7 @@ int main() {
 		&status->uptime,
 	};
 
-	int total = sizeof(modules)/sizeof(modules[0]);
+	int total = sizeof(modules)/sizeof(modules[0]); // total
 	char *XSetStatus = NULL;
 	while(1) {
 		
@@ -80,12 +81,17 @@ int main() {
 			if(!SILENT_MODE) printf("Memory Running...\n");
 		}
 	
-		if(UPTIME_MD) { // Memory Section
+		if(UPTIME_MD) { // Uptime Section
 			uptime_md(status, UPTIME_FORMAT);
 			if(!SILENT_MODE) printf("Uptime Running...\n");
 		}
 
-		if(CPU_MD) { // Memory Section
+		if(DATE_MD) { // Date Section
+			date_md(status, DATE_FORMAT);
+			if(!SILENT_MODE) printf("Date Running...\n");
+		}
+
+		if(CPU_MD) { // CPU Section
 			cpu_md(status, CPU_FORMAT);
 			if(!SILENT_MODE) printf("CPU Running...\n");
 		}
