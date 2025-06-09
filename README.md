@@ -14,6 +14,10 @@ cd dwmSBar
 make                # Build program
 sudo make install   # Build program and install to your system
 ```
+3. Run the program:
+```bash
+dwmSBar
+```
 
 ## Configuration
 Configuration is currently done in ```main.c```, specifically in the configuration section near the top of the file. Modules can be enabled or disabled by modifying the ```#define``` values:
