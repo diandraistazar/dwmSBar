@@ -4,8 +4,8 @@
 // Show current battery Capacity (DONE)
 // Show current volume
 // Show current brightness (DONE)
-// Show current date
-// Show current uptime (WORKING)
+// Show current date (WORKING)
+// Show current uptime (DONE)
 // Show current memory Usage (DONE)
 // Show current CPU usage (DONE)
 
@@ -25,13 +25,14 @@
 #define BRIGHT_FORMAT	"󰌵 %.lf%%"		// Use %lf to represent volume as a float value
 #define MEMORY_FORMAT	"  %d MiB"		// Use %d to represent memory as a decimal value
 #define CPU_FORMAT		" %d%%"		// Use %d to represent memory as a decimal value
+#define UPTIME_FORMAT	"󱎫 %d Sec, %d Mnt, %d Hr"		// Use %d to represent memory as a decimal value
 
 // General
 #define SEP1			" / "
 #define SEP2			""
 #define PATH_BATT		"/sys/class/power_supply/BAT0/capacity"			// Battery path
 #define PATH_BRIGHT		"/sys/class/backlight/amdgpu_bl1/brightness"	// Brightness path
-#define TIMEOUT			400		// Delay between update status bar (in milliseconds)
+#define TIMEOUT			500		// Delay between update status bar (in milliseconds)
 #define SILENT_MODE		1		// No output if the program is running as a background process
 
 #define START
@@ -51,13 +52,13 @@ int main() {
 
 	// StatusBar Layout (modify as needed)
 	char **modules[] = {
-		&status->battery,
 		&status->volume,
 		&status->bright,
+		&status->cpu,
 		&status->memory,
+		&status->battery,
 		&status->date,
 		&status->uptime,
-		&status->cpu,
 	};
 
 	int total = sizeof(modules)/sizeof(modules[0]);
@@ -79,6 +80,11 @@ int main() {
 			if(!SILENT_MODE) printf("Memory Running...\n");
 		}
 	
+		if(UPTIME_MD) { // Memory Section
+			uptime_md(status, UPTIME_FORMAT);
+			if(!SILENT_MODE) printf("Uptime Running...\n");
+		}
+
 		if(CPU_MD) { // Memory Section
 			cpu_md(status, CPU_FORMAT);
 			if(!SILENT_MODE) printf("CPU Running...\n");
@@ -104,6 +110,10 @@ int main() {
 }
 
 char *XSetRoot(Display *display, struct STATUS *status, int total, char ***modules, char *XSetStatus) {
+	if(display == NULL) {
+		return NULL;
+	}
+
 	XSetStatus = realloc(XSetStatus, (sizeof(char)*20)*total);
 	strcpy(XSetStatus, "");	
 	

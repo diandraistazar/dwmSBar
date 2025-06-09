@@ -1,5 +1,5 @@
 CC := gcc
-FLAGS := -Wall -lpthread -lX11
+FLAGS := -Wall -lX11
 SRC := main.c battery.c brightness.c memory.c cpu.c uptime.c utils.c
 OUT := dwmSBar
 

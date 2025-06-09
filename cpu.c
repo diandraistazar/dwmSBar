@@ -62,5 +62,4 @@ void cpu_md(struct STATUS *status, char *format) {
 
 	status->cpu = realloc(status->cpu, strlen(format)+4);
 	sprintf(status->cpu, format, cpu);
-	sleep(1);
 }
