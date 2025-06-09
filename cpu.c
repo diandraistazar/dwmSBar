@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "main.h"
 #include "utils.h"
 
@@ -26,8 +27,6 @@ void cpu_md(struct STATUS *status, char *format) {
 	char *pGuest = NULL;		// 10
 	char *pGuest_nice = NULL;// 11
 
-	int user, nice, system, idle, iowait, irq, softirq, steal, guest, guest_nice;
-
 	char *addresses[] = {
 		pUser,
 		pNice,
@@ -41,23 +40,27 @@ void cpu_md(struct STATUS *status, char *format) {
 		pGuest_nice,
 	};
 
-	int *addresses_int[] = {
-		&user,
-		&nice,
-		&system,
-		&idle,
-		&iowait,
-		&irq,
-		&softirq,
-		&steal,
-		&guest,
-		&guest_nice,
-	};
-	
+	static long prev_total = 0;
+	static long prev_idle = 0;
+
+	long total = 0;
+	long idle = 0;
+
 	strtok(buffer, " ");
 	for(int x = 0; x <= 9; x++) {
 		addresses[x] = strtok(NULL, " ");
-		*addresses_int[x] = atoi(addresses[x]);
+		total += atoi(addresses[x]);
+		if(x == 3) {
+			idle = atoi(addresses[x]);
+		}
 	}
+	
+	int cpu = 100 - ((idle-prev_idle) * 100) / (total-prev_total);
 
+	prev_total = total;
+	prev_idle = idle;
+
+	status->cpu = realloc(status->cpu, strlen(format)+4);
+	sprintf(status->cpu, format, cpu);
+	sleep(1);
 }

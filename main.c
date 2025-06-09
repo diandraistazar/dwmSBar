@@ -5,10 +5,11 @@
 // Show current volume
 // Show current brightness (DONE)
 // Show current date
-// Show current uptime
+// Show current uptime (WORKING)
 // Show current memory Usage (DONE)
-// Show current CPU usage (WORKING)
+// Show current CPU usage (DONE)
 
+// Note! some modules not working, because the modules still developing such as uptime, date, etc.
 // Configuration
 // Modules (1 for enable, 0 for disable)
 #define BATTERY_MD	1		// Show current battery capacity
@@ -21,7 +22,7 @@
 
 // Modules Format 
 #define BAT_FORMAT		"󰂂 %d%%"		// Use %d to represent battery capacity as a decimal value
-#define BRIGHT_FORMAT	"󰌵 %d%%"		// Use %d to represent volume as a decimal value
+#define BRIGHT_FORMAT	"󰌵 %.lf%%"		// Use %lf to represent volume as a float value
 #define MEMORY_FORMAT	"  %d MiB"		// Use %d to represent memory as a decimal value
 #define CPU_FORMAT		" %d%%"		// Use %d to represent memory as a decimal value
 
@@ -50,46 +51,41 @@ int main() {
 
 	// StatusBar Layout (modify as needed)
 	char **modules[] = {
-		&status->memory,
 		&status->battery,
-		&status->bright,
 		&status->volume,
+		&status->bright,
+		&status->memory,
 		&status->date,
 		&status->uptime,
 		&status->cpu,
 	};
 
-	int total;
+	int total = sizeof(modules)/sizeof(modules[0]);
 	char *XSetStatus = NULL;
 	while(1) {
-		total = 0;
 		
 		if(BATTERY_MD) { // Battery Section
 			battery_md(status, BAT_FORMAT, PATH_BATT);
-			total = total + 1;
 			if(!SILENT_MODE) printf("Battery Running...\n");
 		}
 
 		if(BRIGHT_MD) { // Brightness Section
 			bright_md(status, BRIGHT_FORMAT, PATH_BRIGHT);
-			total = total + 1;
 			if(!SILENT_MODE) printf("Brightness Running...\n");
 		}
 		
 		if(MEMORY_MD) { // Memory Section
 			memory_md(status, MEMORY_FORMAT);
-			total = total + 1;
 			if(!SILENT_MODE) printf("Memory Running...\n");
 		}
-		
+	
 		if(CPU_MD) { // Memory Section
 			cpu_md(status, CPU_FORMAT);
-			total = total + 1;
 			if(!SILENT_MODE) printf("CPU Running...\n");
 		}
 
 		if((XSetStatus = XSetRoot(display, status, total, modules, XSetStatus)) == NULL) { // Update statusbar
-			perror("Gagal Terkoneksi dengan X server: ");
+			perror("Failed to connect X server: ");
 			break;
 		}
 		usleep((TIMEOUT)*1000);
@@ -112,6 +108,9 @@ char *XSetRoot(Display *display, struct STATUS *status, int total, char ***modul
 	strcpy(XSetStatus, "");	
 	
 	for(int x = 0; x < total; x++) {
+		if(*modules[x] == NULL) {
+			continue;
+		}
 		strcat(XSetStatus, SEP1);
 		strcat(XSetStatus, *modules[x]);
 		strcat(XSetStatus, SEP2);

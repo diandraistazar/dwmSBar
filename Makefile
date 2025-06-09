@@ -1,6 +1,6 @@
 CC := gcc
 FLAGS := -Wall -lpthread -lX11
-SRC := main.c battery.c brightness.c memory.c cpu.c utils.c
+SRC := main.c battery.c brightness.c memory.c cpu.c uptime.c utils.c
 OUT := dwmSBar
 
 all:
@@ -10,6 +10,6 @@ install:
 	${CC} ${SRC} ${FLAGS} -o ${OUT}
 	cp ${OUT} /usr/bin
 
-clean:
+uninstall:
 	rm ${OUT}
 	rm /usr/bin${OUT}

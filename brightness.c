@@ -13,6 +13,6 @@ void bright_md(struct STATUS *status, char *format, char *path) {
 	fread(buffer, 1, sizeof(buffer), pBright);
 	removeNewLine(buffer);
 	status->bright = realloc(status->bright, strlen(buffer)+strlen(format));
-	sprintf(status->bright, format, atoi(buffer));
+	sprintf(status->bright, format, (atoi(buffer) / 255.0) * 100.0);
 	fclose(pBright);
 }
