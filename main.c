@@ -102,13 +102,9 @@ int main() {
 		}
 		usleep((TIMEOUT)*1000);
 	}
-	free(status->battery);
-	free(status->volume);
-	free(status->bright);
-	free(status->date);
-	free(status->uptime);
-	free(status->memory);
-	free(status->cpu);
+	for(int x = 0; x < total; x++)
+		free(*modules[x]);
+
 	free(XSetStatus);
 	free(status);
 	XCloseDisplay(display);

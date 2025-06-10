@@ -11,5 +11,5 @@ install:
 	cp ${OUT} /usr/bin
 
 uninstall:
+	rm /usr/bin/${OUT}
 	rm ${OUT}
-	rm /usr/bin${OUT}
