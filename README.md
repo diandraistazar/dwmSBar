@@ -1,9 +1,11 @@
 # dwmSBar
 
+![banner-github](https://github.com/diandraistazar/dwmSBar/blob/master/preview.png)
+
 **dwmSBar** is a minimal and lightweight status bar for [dwm](https://dwm.suckless.org/), written in C. It includes several useful modules to display system information on your dwm status bar.  
 
 ## Installation
-Note: To build this program, you need dependencies like ```gcc```, ```libX11```, ```libpulse``` installed on your system.
+Note: To build this program, you need dependencies like ```gcc```, ```libX11```, and ```libpulse``` installed on your system.
 1. Clone this repository to your local machine and navigate into the directory:
 ```bash
 git clone https://github.com/diandraistazar/dwmSBar.git
