@@ -22,7 +22,8 @@
 
 // Modules Format		Format(in string literal)
 #define BAT_FORMAT		"󰂂 %d%%"						// Use %d to represent battery capacity as a decimal value
-#define BRIGHT_FORMAT	"󰌵 %.lf%%"						// Use %lf to represent volume as a float value
+#define VOLUME_FORMAT	"󰓃 %d%%"						// Use %ld to represent volume as a long int value
+#define BRIGHT_FORMAT	"󰌵 %.lf%%"						// Use %lf to represent brightness as a float value
 #define MEMORY_FORMAT	"  %d MiB"						// Use %d to represent memory as a decimal value
 #define CPU_FORMAT		" %d%%"						// Use %d to represent memory as a decimal value
 #define UPTIME_FORMAT	"󱎫 %d Sec, %d Mnt, %d Hr"		// Use %d to represent uptime as a decimal value
@@ -33,7 +34,7 @@
 #define SEP2			""
 #define PATH_BATT		"/sys/class/power_supply/BAT0/capacity"			// Battery path
 #define PATH_BRIGHT		"/sys/class/backlight/amdgpu_bl1/brightness"	// Brightness path
-#define TIMEOUT			500												// Delay between update status bar (in milliseconds)
+#define TIMEOUT			450												// Delay between update status bar (in milliseconds)
 #define SILENT_MODE		1												// No output if the program is running as a background process
 
 #define START
@@ -69,6 +70,11 @@ int main() {
 		if(BATTERY_MD) { // Battery Section
 			battery_md(status, BAT_FORMAT, PATH_BATT);
 			if(!SILENT_MODE) printf("Battery Running...\n");
+		}
+
+		if(VOLUME_MD) { // Volume Section
+			volume_md(status, VOLUME_FORMAT);
+			if(!SILENT_MODE) printf("Volume Running...\n");
 		}
 
 		if(BRIGHT_MD) { // Brightness Section
