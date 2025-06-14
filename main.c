@@ -26,12 +26,12 @@
 #define BRIGHT_FORMAT	"󰌵 %.lf%%"						// Use %lf to represent brightness as a float value
 #define MEMORY_FORMAT	"  %d MiB"						// Use %d to represent memory as a decimal value
 #define CPU_FORMAT		" %d%%"						// Use %d to represent memory as a decimal value
-#define UPTIME_FORMAT	"󱎫 %d Sec, %d Mnt, %d Hr"		// Use %d to represent uptime as a decimal value
-#define DATE_FORMAT		"  %a, %d %b %Y - %H:%M:%S"		// Use strftime format, google it for more details
+#define UPTIME_FORMAT	"󱎫 %d:%d:%d"		// Use %d to represent uptime as a decimal value
+#define DATE_FORMAT		" %d-%m-%Y - %H:%M:%S"		// Use strftime format, google it for more details
 
 // General
-#define SEP1			" / "
-#define SEP2			""
+#define SEP1			" < "
+#define SEP2			" >"
 #define PATH_BATT		"/sys/class/power_supply/BAT0/capacity"			// Battery path
 #define PATH_BRIGHT		"/sys/class/backlight/amdgpu_bl1/brightness"	// Brightness path
 #define TIMEOUT			450												// Delay between update status bar (in milliseconds)
@@ -43,6 +43,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <X11/Xlib.h>
+#include <signal.h>
 #include "main.h"
 
 int main() {
@@ -65,7 +66,10 @@ int main() {
 
 	int total = sizeof(modules)/sizeof(modules[0]); // total
 	char *XSetStatus = NULL;
-	while(1) {
+
+	unsigned short cond_t = 1;
+	signal(SIGINT, stp_it);
+	while(cond_t) {
 		
 		if(BATTERY_MD) { // Battery Section
 			battery_md(status, BAT_FORMAT, PATH_BATT);
@@ -147,4 +151,10 @@ void Initialization(struct STATUS *status) {
 	status->uptime = NULL;
 	status->memory = NULL;
 	status->cpu = NULL;
+}
+
+void stp_it(int sig) {
+	printf("Received SIGINT signal\n");
+	printf("dwmSBar successfully stopped...\n");
+	exit(EXIT_SUCCESS);
 }
