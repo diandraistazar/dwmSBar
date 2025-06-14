@@ -35,7 +35,7 @@ Configuration is currently done in ```main.c```, specifically in the configurati
 #define CPU_MD      1   // Show CPU usage (in percentage)
 ...
 ```
-⚠️ Some modules may not work as expected because they are still under development. You are free to modify or extend them based on your needs.
+You are free to modify or extend them based on your needs.
 
 ## Uninstallation
 To uninstall the program from your system, simply run (requires root privileges):
