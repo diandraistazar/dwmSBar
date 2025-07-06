@@ -10,6 +10,7 @@ struct STATUS {
 
 #ifdef START
 #define START
+unsigned short cond_t;
 void Initialization(struct STATUS *status);
 char *XSetRoot(Display *display, struct STATUS *status, int total, char ***modules, char *XSetStatus);
 #endif

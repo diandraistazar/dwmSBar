@@ -1,15 +1,14 @@
 /* A simple DWM status bar written in C */
 
 /* TODO: */
-// Show current battery Capacity (DONE)
+// Show current battery Capacity
 // Show current volume
-// Show current brightness (DONE)
-// Show current date (WORKING)
-// Show current uptime (DONE)
-// Show current memory Usage (DONE)
-// Show current CPU usage (DONE)
+// Show current brightness
+// Show current date 
+// Show current uptime
+// Show current memory Usage
+// Show current CPU usage
 
-// Note! some modules not working, because the modules still developing such as uptime, date, etc.
 // Configuration
 // Modules (1 for enable, 0 for disable)
 #define BATTERY_MD	1		// Show current battery capacity
@@ -21,18 +20,18 @@
 #define CPU_MD		1		// Show memory usage (in percentage)
 
 // Modules Format		Format(in string literal)
-#define BAT_FORMAT		"󰂂 %d%%"						// Use %d to represent battery capacity as a decimal value
-#define VOLUME_FORMAT	"󰓃 %d%%"						// Use %ld to represent volume as a long int value
-#define BRIGHT_FORMAT	"󰌵 %.lf%%"						// Use %lf to represent brightness as a float value
-#define MEMORY_FORMAT	"  %d MiB"						// Use %d to represent memory as a decimal value
-#define CPU_FORMAT		" %d%%"						// Use %d to represent memory as a decimal value
-#define UPTIME_FORMAT	"󱎫 %d:%d:%d"		// Use %d to represent uptime as a decimal value
-#define DATE_FORMAT		" %d-%m-%Y - %H:%M:%S"		// Use strftime format, google it for more details
+#define BAT_FORMAT		"%d%%"						// Use %d to represent battery capacity as a decimal value
+#define VOLUME_FORMAT	"%d%%"						// Use %ld to represent volume as a long int value
+#define BRIGHT_FORMAT	"%.lf%%"						// Use %lf to represent brightness as a float value
+#define MEMORY_FORMAT	"%d MiB"						// Use %d to represent memory as a decimal value
+#define CPU_FORMAT		"%d%%"						// Use %d to represent memory as a decimal value
+#define UPTIME_FORMAT	"%d:%d:%d"		// Use %d to represent uptime as a decimal value
+#define DATE_FORMAT		"%d-%m-%Y - %H:%M:%S"		// Use strftime format, google it for more details
 
 // General
-#define SEP1			" < "
-#define SEP2			" >"
-#define PATH_BATT		"/sys/class/power_supply/BAT0/capacity"			// Battery path
+#define SEP1				"  "
+#define SEP2				" "
+#define PATH_BATT			"/sys/class/power_supply/BAT0/capacity"			// Battery path
 #define PATH_BRIGHT		"/sys/class/backlight/amdgpu_bl1/brightness"	// Brightness path
 #define TIMEOUT			450												// Delay between update status bar (in milliseconds)
 #define SILENT_MODE		1												// No output if the program is running as a background process
@@ -55,10 +54,10 @@ int main() {
 
 	// StatusBar Layout (modify as needed)
 	char **modules[] = {
-		&status->volume,
-		&status->bright,
 		&status->cpu,
 		&status->memory,
+		&status->volume,
+		&status->bright,
 		&status->battery,
 		&status->date,
 		&status->uptime,
@@ -67,8 +66,8 @@ int main() {
 	int total = sizeof(modules)/sizeof(modules[0]); // total
 	char *XSetStatus = NULL;
 
-	unsigned short cond_t = 1;
 	signal(SIGINT, stp_it);
+	cond_t = 1;
 	while(cond_t) {
 		
 		if(BATTERY_MD) { // Battery Section
@@ -118,6 +117,7 @@ int main() {
 	free(XSetStatus);
 	free(status);
 	XCloseDisplay(display);
+	printf("dwmSBar successfully stopped...\n");
 	return 0;
 }
 
@@ -155,6 +155,5 @@ void Initialization(struct STATUS *status) {
 
 void stp_it(int sig) {
 	printf("Received SIGINT signal\n");
-	printf("dwmSBar successfully stopped...\n");
-	exit(EXIT_SUCCESS);
+	cond_t = 0;
 }
