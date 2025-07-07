@@ -9,7 +9,7 @@
 #include "utils.h"
 
 //void cpu_md(struct STATUS *status, char *format) {
-void cpu_md(struct STATUS *status, char *format) {
+void cpu_md(struct STATUS *status, const char *format) {
 	char buffer[70] = "";
 	FILE *pCPU = fopen("/proc/stat", "r");
 	fgets(buffer, sizeof(buffer), pCPU);

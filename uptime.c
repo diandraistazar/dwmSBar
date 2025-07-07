@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "main.h"
 
-void uptime_md(struct STATUS *status, char *format) {
+void uptime_md(struct STATUS *status, const char *format) {
 	char buffer[20] = "";
 	FILE *pUptime = fopen("/proc/uptime" , "r");
 	fgets(buffer, sizeof(buffer), pUptime);

@@ -9,151 +9,91 @@
 // Show current memory Usage
 // Show current CPU usage
 
-// Configuration
-// Modules (1 for enable, 0 for disable)
-#define BATTERY_MD	1		// Show current battery capacity
-#define VOLUME_MD	1		// Show current volume
-#define BRIGHT_MD	1		// Show current brightness
-#define DATE_MD		1		// Show current date
-#define UPTIME_MD	1		// Show system uptime
-#define MEMORY_MD	1		// Show memory usage (in percentage)
-#define CPU_MD		1		// Show memory usage (in percentage)
-
-// Modules Format		Format(in string literal)
-#define BAT_FORMAT		"%d%%"						// Use %d to represent battery capacity as a decimal value
-#define VOLUME_FORMAT	"%d%%"						// Use %ld to represent volume as a long int value
-#define BRIGHT_FORMAT	"%.lf%%"						// Use %lf to represent brightness as a float value
-#define MEMORY_FORMAT	"%d MiB"						// Use %d to represent memory as a decimal value
-#define CPU_FORMAT		"%d%%"						// Use %d to represent memory as a decimal value
-#define UPTIME_FORMAT	"%d:%d:%d"		// Use %d to represent uptime as a decimal value
-#define DATE_FORMAT		"%d-%m-%Y - %H:%M:%S"		// Use strftime format, google it for more details
-
-// General
-#define SEP1				"  "
-#define SEP2				" "
-#define PATH_BATT			"/sys/class/power_supply/BAT0/capacity"			// Battery path
-#define PATH_BRIGHT		"/sys/class/backlight/amdgpu_bl1/brightness"	// Brightness path
-#define TIMEOUT			450												// Delay between update status bar (in milliseconds)
-#define SILENT_MODE		1												// No output if the program is running as a background process
-
 #define START
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <X11/Xlib.h>
-#include <signal.h>
 #include "main.h"
 
 int main() {
-	// Initialization
 	Display *display = XOpenDisplay(NULL);
 	struct STATUS *status;
 	status = (struct STATUS*)malloc(sizeof(struct STATUS));
-	Initialization(status);
-
-	// StatusBar Layout (modify as needed)
+	typedef void (*ptr_func)(struct STATUS *, const char *);
+	
 	char **modules[] = {
-		&status->cpu,
-		&status->memory,
+		&status->battery,
 		&status->volume,
 		&status->bright,
-		&status->battery,
 		&status->date,
 		&status->uptime,
+		&status->memory,
+		&status->cpu,
+	};
+	ptr_func functions[] = {
+		battery_md,
+		volume_md,
+		bright_md,
+		date_md,
+		uptime_md,
+		memory_md,
+		cpu_md,
 	};
 
-	int total = sizeof(modules)/sizeof(modules[0]); // total
-	char *XSetStatus = NULL;
-
+	int total = sizeof(modules)/sizeof(functions[0]); // total
+	Initialization(modules, total);
+	
 	signal(SIGINT, stp_it);
 	cond_t = 1;
 	while(cond_t) {
-		
-		if(BATTERY_MD) { // Battery Section
-			battery_md(status, BAT_FORMAT, PATH_BATT);
-			if(!SILENT_MODE) printf("Battery Running...\n");
-		}
-
-		if(VOLUME_MD) { // Volume Section
-			volume_md(status, VOLUME_FORMAT);
-			if(!SILENT_MODE) printf("Volume Running...\n");
-		}
-
-		if(BRIGHT_MD) { // Brightness Section
-			bright_md(status, BRIGHT_FORMAT, PATH_BRIGHT);
-			if(!SILENT_MODE) printf("Brightness Running...\n");
-		}
-		
-		if(MEMORY_MD) { // Memory Section
-			memory_md(status, MEMORY_FORMAT);
-			if(!SILENT_MODE) printf("Memory Running...\n");
+	
+		for(int i = 0; i < total; i++) {
+			(functions[i])(status, mod_format[i]);
 		}
 	
-		if(UPTIME_MD) { // Uptime Section
-			uptime_md(status, UPTIME_FORMAT);
-			if(!SILENT_MODE) printf("Uptime Running...\n");
-		}
-
-		if(DATE_MD) { // Date Section
-			date_md(status, DATE_FORMAT);
-			if(!SILENT_MODE) printf("Date Running...\n");
-		}
-
-		if(CPU_MD) { // CPU Section
-			cpu_md(status, CPU_FORMAT);
-			if(!SILENT_MODE) printf("CPU Running...\n");
-		}
-
-		if((XSetStatus = XSetRoot(display, status, total, modules, XSetStatus)) == NULL) { // Update statusbar
+		if(XSetRoot(display, status, total, modules)) { // Update statusbar
 			perror("Failed to connect X server: ");
 			break;
 		}
-		usleep((TIMEOUT)*1000);
+		usleep((timeout)*1000);
 	}
-	for(int x = 0; x < total; x++)
-		free(*modules[x]);
-
-	free(XSetStatus);
+	while(total--) free(*modules[total]);
 	free(status);
 	XCloseDisplay(display);
 	printf("dwmSBar successfully stopped...\n");
 	return 0;
 }
 
-char *XSetRoot(Display *display, struct STATUS *status, int total, char ***modules, char *XSetStatus) {
+short XSetRoot(Display *display, struct STATUS *status, int total, char ***modules) {
 	if(display == NULL) {
-		return NULL;
+		return 1;
 	}
-
-	XSetStatus = realloc(XSetStatus, (sizeof(char)*20)*total);
-	strcpy(XSetStatus, "");	
+	
+	char XSetStatus[120] = "";
 	
 	for(int x = 0; x < total; x++) {
-		if(*modules[x] == NULL) {
-			continue;
+		int index = 0;
+		while(1) {
+			if(layout[x] == index) {
+				if(*modules[layout[x]] == NULL)
+					break;
+				strcat(XSetStatus, seperators[0]);
+				strcat(XSetStatus, *modules[layout[x]]);
+				strcat(XSetStatus, seperators[1]);
+				break;
+			}
+			index++;
 		}
-		strcat(XSetStatus, SEP1);
-		strcat(XSetStatus, *modules[x]);
-		strcat(XSetStatus, SEP2);
 	}
-	
 	XStoreName(display, DefaultRootWindow(display), XSetStatus);
 	XSync(display, 0);
-	return XSetStatus;
+	return 0;
 }
 
-void Initialization(struct STATUS *status) {
-	status->battery = NULL;
-	status->volume = NULL;
-	status->bright = NULL;
-	status->date = NULL;
-	status->uptime = NULL;
-	status->memory = NULL;
-	status->cpu = NULL;
+void Initialization(char ***modules, int total) {
+	for(int i = 0; i < total; i++) {
+		*modules[i] = NULL;
+	}
 }
 
 void stp_it(int sig) {
-	printf("Received SIGINT signal\n");
+	printf("\nReceived SIGINT signal\n");
 	cond_t = 0;
 }

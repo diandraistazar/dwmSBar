@@ -7,9 +7,9 @@
 #include "main.h"
 #include "utils.h"
 
-void battery_md(struct STATUS *status, char *format, char *path) {
+void battery_md(struct STATUS *status, const char *format) {
 	char buffer[5] = "";
-	FILE *pBattery = fopen(path, "r");
+	FILE *pBattery = fopen(path_bat, "r");
 	fread(buffer, 1, sizeof(buffer), pBattery);
 	removeNewLine(buffer);
 	status->battery = realloc(status->battery, strlen(buffer)+strlen(format));
