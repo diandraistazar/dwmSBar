@@ -6,15 +6,15 @@
 #include <stdlib.h>
 #include "main.h"
 
+long seconds, minutes, hours, hours_;
+
 void uptime_md(const char *format) {
 	char buffer[20] = "";
 	FILE *pUptime = fopen("/proc/uptime" , "r");
 	fgets(buffer, sizeof(buffer), pUptime);
 	fclose(pUptime);
 	char *Puptime = strtok(buffer, " ");
-	long uptime = atof(Puptime);
-	
-	long seconds = 0, minutes = 0, hours = 0, hours_ = 0;
+	long uptime = atoi(Puptime);
 	
 	hours = uptime / 3600;
 	hours_ = uptime % 3600;

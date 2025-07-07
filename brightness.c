@@ -11,8 +11,8 @@ void bright_md(const char *format) {
 	char buffer[5] = "";
 	FILE *pBright = fopen(path_bright, "r");
 	fread(buffer, 1, sizeof(buffer), pBright);
+	fclose(pBright);
 	removeNewLine(buffer);
 	status->bright = realloc(status->bright, strlen(buffer)+strlen(format));
 	sprintf(status->bright, format, (atoi(buffer) / 255.0) * 100.0);
-	fclose(pBright);
 }

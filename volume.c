@@ -9,17 +9,11 @@ void volume_md(const char *format)
 	char *command = "pactl get-sink-volume @DEFAULT_SINK@";
 	char buffer[35] = "";
 	char *Pbuffer = buffer;
-	FILE *pOutput;
+	FILE *pOutput = popen(command, "r");
+	if(!pOutput)
+		return;
 
-	if((pOutput = popen(command, "r")) < 0) {
-		perror("Error: ");
-		pclose(pOutput);
-	}
 	fgets(buffer, sizeof(buffer), pOutput);
-	if(pOutput != NULL) {
-		pclose(pOutput);
-	}
-
 	parsingString(&Pbuffer, " ", 5);
 	status->volume = realloc(status->volume, strlen(format)+strlen(Pbuffer));
 	sprintf(status->volume, format, atol(Pbuffer));

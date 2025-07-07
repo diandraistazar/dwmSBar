@@ -8,49 +8,28 @@
 #include "main.h"
 #include "utils.h"
 
+static long prev_total;
+static long prev_idle;
+long total;
+long idle;
+
 void cpu_md(const char *format) {
 	char buffer[70] = "";
+	char *cpu_proc = NULL;
 	FILE *pCPU = fopen("/proc/stat", "r");
 	fgets(buffer, sizeof(buffer), pCPU);
 	fclose(pCPU);
 	removeNewLine(buffer);
 
-	char *pUser = NULL;		// 2
-	char *pNice = NULL;		// 3
-	char *pSystem = NULL;	// 4
-	char *pIdle = NULL;		// 5
-	char *pIowait = NULL;	// 6
-	char *pIrq = NULL;		// 7
-	char *pSoftirq = NULL;	// 8
-	char *pSteal = NULL;		// 9
-	char *pGuest = NULL;		// 10
-	char *pGuest_nice = NULL;// 11
-
-	char *addresses[] = {
-		pUser,
-		pNice,
-		pSystem,
-		pIdle,
-		pIowait,
-		pIrq,
-		pSoftirq,
-		pSteal,
-		pGuest,
-		pGuest_nice,
-	};
-
-	static long prev_total = 0;
-	static long prev_idle = 0;
-
-	long total = 0;
-	long idle = 0;
+	total = 0;
+	idle = 0;
 
 	strtok(buffer, " ");
 	for(int x = 0; x <= 9; x++) {
-		addresses[x] = strtok(NULL, " ");
-		total += atoi(addresses[x]);
+		cpu_proc = strtok(NULL, " ");
+		total += atoi(cpu_proc);
 		if(x == 3) {
-			idle = atoi(addresses[x]);
+			idle = atoi(cpu_proc);
 		}
 	}
 	
@@ -58,7 +37,7 @@ void cpu_md(const char *format) {
 
 	prev_total = total;
 	prev_idle = idle;
-
+	
 	status->cpu = realloc(status->cpu, strlen(format)+4);
 	sprintf(status->cpu, format, cpu);
 }

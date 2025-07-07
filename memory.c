@@ -4,49 +4,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/sysinfo.h>
 #include "utils.h"
 #include "main.h"
 
 void memory_md(const char *format) {
-	char buffer[30] = "";
-	char *PmemTotal = NULL;
-	char *PmemAvail = NULL;
-	char *Ptemp = NULL;
-	short index = 0;
-	FILE *pMemory = fopen("/proc/meminfo", "r");
+	struct sysinfo memInfo;
+	sysinfo(&memInfo);
 	
-	while(fgets(buffer, sizeof(buffer), pMemory)) {
-		if(index == 2) { break; }
-		
-		if((Ptemp = strstr(buffer, "MemTotal:"))) {
-			PmemTotal = strdup(Ptemp);
-			index++;
-		}
-		else if((Ptemp = strstr(buffer, "MemAvailable:"))) {
-			PmemAvail = strdup(Ptemp);
-			index++;
-		}
-		
-		if(Ptemp == NULL) {
-			free(Ptemp);
-		}
-	}
+	long memTotal = memInfo.totalram;
+	long memAvail = memInfo.freeram;
 	
-	char *start_PmemTotal = PmemTotal;
-	char *start_PmemAvail = PmemAvail;
-	parsingString(&PmemTotal, " ", 2);
-	parsingString(&PmemAvail, " ", 2);
-	long memTotal = atoi(PmemTotal);
-	long memAvail = atoi(PmemAvail);
-	
-	int calculate = (memTotal - memAvail);
-	calculate = calculate / 1049; // convert to Mebibytes
-	
-	status->memory = realloc(status->memory, strlen(format)+sizeof(calculate));
-	sprintf(status->memory, format, calculate);
+	long calculate = (memTotal - memAvail);
+	calculate = (calculate / 1000) / 1049; // convert to Mebibytes
 
-	free(start_PmemTotal);
-	free(start_PmemAvail);
-	
-	fclose(pMemory);
+	status->memory = realloc(status->memory, strlen(format)+4);
+	sprintf(status->memory, format, (int)calculate);
 }
