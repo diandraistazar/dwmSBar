@@ -7,7 +7,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-void bright_md(struct STATUS *status, const char *format) {
+void bright_md(const char *format) {
 	char buffer[5] = "";
 	FILE *pBright = fopen(path_bright, "r");
 	fread(buffer, 1, sizeof(buffer), pBright);

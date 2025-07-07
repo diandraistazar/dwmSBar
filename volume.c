@@ -4,7 +4,7 @@
 #include "main.h"
 #include "utils.h"
 
-void volume_md(struct STATUS *status, const char *format)
+void volume_md(const char *format)
 {
 	char *command = "pactl get-sink-volume @DEFAULT_SINK@";
 	char buffer[35] = "";

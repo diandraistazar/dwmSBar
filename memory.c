@@ -7,7 +7,7 @@
 #include "utils.h"
 #include "main.h"
 
-void memory_md(struct STATUS *status, const char *format) {
+void memory_md(const char *format) {
 	char buffer[30] = "";
 	char *PmemTotal = NULL;
 	char *PmemAvail = NULL;

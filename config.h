@@ -33,6 +33,6 @@ const enum Layout layout[] = {
 
 // General
 const char *seperators[2] = { "  " , " " };
-const char *path_bat = "/sys/class/power_supply/BAT0/capacity";
-const char *path_bright = "/sys/class/backlight/amdgpu_bl1/brightness";
-const int timeout = 450;
+const char *path_bat      = "/sys/class/power_supply/BAT0/capacity";
+const char *path_bright   = "/sys/class/backlight/amdgpu_bl1/brightness";
+const int timeout         = 450;

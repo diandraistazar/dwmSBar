@@ -7,7 +7,7 @@
 #include "main.h"
 #include "utils.h"
 
-void battery_md(struct STATUS *status, const char *format) {
+void battery_md(const char *format) {
 	char buffer[5] = "";
 	FILE *pBattery = fopen(path_bat, "r");
 	fread(buffer, 1, sizeof(buffer), pBattery);

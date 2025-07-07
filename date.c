@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "main.h"
 
-void date_md(struct STATUS *status, const char *format) {
+void date_md(const char *format) {
 	int size = strlen(format)+5;
 	time_t curr_time;
 	time(&curr_time);

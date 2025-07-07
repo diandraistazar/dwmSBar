@@ -12,11 +12,13 @@
 #define START
 #include "main.h"
 
+Display *display = NULL;
+struct STATUS *status = NULL;
+typedef void (*ptr_func)(const char *);
+
 int main() {
-	Display *display = XOpenDisplay(NULL);
-	struct STATUS *status;
+	display = XOpenDisplay(NULL);
 	status = (struct STATUS*)malloc(sizeof(struct STATUS));
-	typedef void (*ptr_func)(struct STATUS *, const char *);
 	
 	char **modules[] = {
 		&status->battery,
@@ -38,17 +40,18 @@ int main() {
 	};
 
 	int total = sizeof(modules)/sizeof(functions[0]); // total
-	Initialization(modules, total);
+	Init_NULL(modules, total);
 	
 	signal(SIGINT, stp_it);
 	cond_t = 1;
 	while(cond_t) {
 	
 		for(int i = 0; i < total; i++) {
-			(functions[i])(status, mod_format[i]);
+			if(modules_man[i])
+				(functions[i])(mod_format[i]);
 		}
 	
-		if(XSetRoot(display, status, total, modules)) { // Update statusbar
+		if(XSetRoot(total, modules)) { // Update statusbar
 			perror("Failed to connect X server: ");
 			break;
 		}
@@ -61,12 +64,12 @@ int main() {
 	return 0;
 }
 
-short XSetRoot(Display *display, struct STATUS *status, int total, char ***modules) {
+short XSetRoot(int total, char ***modules) {
 	if(display == NULL) {
 		return 1;
 	}
 	
-	char XSetStatus[120] = "";
+	char XSetStatus[100] = "";
 	
 	for(int x = 0; x < total; x++) {
 		int index = 0;
@@ -87,7 +90,7 @@ short XSetRoot(Display *display, struct STATUS *status, int total, char ***modul
 	return 0;
 }
 
-void Initialization(char ***modules, int total) {
+void Init_NULL(char ***modules, int total) {
 	for(int i = 0; i < total; i++) {
 		*modules[i] = NULL;
 	}
