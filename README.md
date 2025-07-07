@@ -22,20 +22,32 @@ dwmSBar
 ```
 
 ## Configuration
-Configuration is currently done in ```main.c```, specifically in the configuration section near the top of the file. Modules can be enabled or disabled by modifying the ```#define``` values:
+Configuration is currently done in ```config.h```:
 ```
-// Configuration
-// Modules (1 to enable, 0 to disable)
-#define BATTERY_MD  1   // Show current battery capacity
-#define VOLUME_MD   1   // Show current volume
-#define BRIGHT_MD   1   // Show current brightness
-#define DATE_MD     1   // Show current date
-#define UPTIME_MD   1   // Show system uptime
-#define MEMORY_MD   1   // Show memory usage (in percentage)
-#define CPU_MD      1   // Show CPU usage (in percentage)
+// Modules (1 for enable, 0 for disable) 
+const short int modules_man[] = {
+/*Battery*/ 1,
+/*Volume*/  1,
+/*Bright*/  1,
+/*Date*/    1,
+/*Uptime*/  1,
+/*memory*/  1,
+/*cpu*/     1,
+};
+
+// Modules Format
+const char *mod_format[] = {
+/*Battery*/ "%d%%",
+/*Volume*/  "%d%%",
+/*Bright*/  "%.lf%%",
+/*Date*/    "%d-%m-%Y - %H:%M:%S",
+/*Uptime*/  "%d:%d:%d",
+/*memory*/  "%d MiB",
+/*cpu*/     "%d%%",
+};
 ...
 ```
-You are free to modify or extend them based on your needs.
+You are free to modify based on your needs.
 
 ## Uninstallation
 To uninstall the program from your system, simply run (requires root privileges):
