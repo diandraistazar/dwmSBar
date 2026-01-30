@@ -1,13 +1,16 @@
-CC := gcc
-FLAGS := -Wall -lX11
-SRC := main.c battery.c volume.c brightness.c memory.c cpu.c uptime.c date.c utils.c
-OUT := dwmSBar
+NAME := "dwmSBar"
+
+CC := clang
+FLAGS := -Wall -lX11 -Os -I./include -DPROGRAM=\"${NAME}\"
+LIBS := -lasound
+SRC := src/main.c src/battery.c src/volume.c src/brightness.c src/memory.c src/cpu.c src/uptime.c src/date.c
+OUT := ${NAME}
 
 all:
-	${CC} ${SRC} ${FLAGS} -o ${OUT}
+	${CC} ${SRC} ${FLAGS} ${LIBS} -o ${OUT}
 
 install:
-	${CC} ${SRC} ${FLAGS} -o ${OUT}
+	${CC} ${SRC} ${FLAGS} ${LIBS} -o ${OUT}
 	cp ${OUT} /usr/bin
 
 uninstall:

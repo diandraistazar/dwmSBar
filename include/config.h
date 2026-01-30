@@ -1,5 +1,5 @@
 // Modules (1 for enable, 0 for disable) 
-const short int modules_man[] = {
+const int enable_modules[] = {
 /*Battery*/ 1,
 /*Volume*/  1,
 /*Bright*/  1,
@@ -11,13 +11,13 @@ const short int modules_man[] = {
 
 // Modules Format
 const char *mod_format[] = {
-/*Battery*/ "%d%%",
-/*Volume*/  "%d%%",
-/*Bright*/  "%.lf%%",
+/*Battery*/ "BAT:%d%%",
+/*Volume*/  "VOL:%d%%",
+/*Bright*/  "BRIGHT:%.lf%%",
 /*Date*/    "%d-%m-%Y - %H:%M:%S",
 /*Uptime*/  "%d:%d:%d",
-/*memory*/  "%d MiB",
-/*cpu*/     "%d%%",
+/*memory*/  "MEM:%d MiB",
+/*cpu*/     "CPU:%.1f%%",
 };
 
 // Layout
@@ -32,7 +32,7 @@ const enum Layout layout[] = {
 };
 
 // General
-const char *seperators[2] = { "  " , " " };
-const char *path_bat      = "/sys/class/power_supply/BAT0/capacity";
-const char *path_bright   = "/sys/class/backlight/amdgpu_bl1/brightness";
-const int timeout         = 450;
+const char *seperators[2] = { "| " , " " };
+const char *path_battery = "/sys/class/power_supply/BAT0/capacity";
+const char *path_brightness = "/sys/class/backlight/amdgpu_bl0/brightness";
+const int timeout = 300;
