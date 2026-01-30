@@ -41,7 +41,6 @@ void (*function[])(const char*) = {
 	cpu_md,
 };
 
-// Function prototypes
 void stop(int sig);
 void Initialize_NULL();
 void update_modules();
